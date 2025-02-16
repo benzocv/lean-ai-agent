@@ -1,5 +1,5 @@
 {
-  "id": "806b11b7-0812-431e-9e50-b6c7b7b04896",
+  "id": "d8e8b9ee-e1eb-4b17-938d-a3c928d70a9b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -28,12 +28,6 @@
         "todo": {
           "name": "todo",
           "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "done": {
-          "name": "done",
-          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },

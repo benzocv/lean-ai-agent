@@ -20,7 +20,9 @@
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.39.3",
+    "drizzle-orm": "0.39.3",
+    "@drizzle-orm/pg": "0.39.3",
+    "@drizzle-orm/pg-core": "0.39.3",
     "openai": "^4.85.1",
     "pg": "^8.13.3",
     "readline-sync": "^1.4.10"

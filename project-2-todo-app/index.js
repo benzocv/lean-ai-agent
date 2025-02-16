@@ -3,13 +3,14 @@ import { db } from "./db/index.js";
 import { todoTable } from "./db/schema.js";
 import readlineSync from "readline-sync";
 import dotenv from "dotenv";
+import { ilike, eq } from "drizzle-orm";
 dotenv.config();
+const OPEN_AI_API_KEY = process.env.OPEN_AI_API_KEY;
 
 const openai = new OpenAI({
   apiKey: OPEN_AI_API_KEY,
 });
 
-const OPEN_AI_API_KEY = process.env.OPEN_AI_API_KEY;
 
 const tools = {
   getAllTodos: getAllTodos,
@@ -20,30 +21,44 @@ const tools = {
 
 // tools
 async function getAllTodos() {
-  const todos = await db.select(todoTable).all();
+  const todos = await db
+    .select()
+    .from(todoTable)
   return todos;
 }
 
-async function addNewTodo(todo) {
+
+
+// 2) addNewTodo
+async function addNewTodo(todoString) {
   const [newTodo] = await db
     .insert(todoTable)
-    .values(todo)
-    .returning(todoTable.id)
-    .run();
+    .values({
+      todo: todoString,
+    })
+    .returning({ id: todoTable.id });
+    
+
   return newTodo.id;
 }
 
+
+
+// 3) searchTodos
 async function searchTodos(search) {
   const todos = await db
-    .select(todoTable)
-    .where(todoTable.todo.like(`%${search}%`))
-    .all();
+    .select()
+    .from(todoTable)
+    .where(ilike(todoTable.todo, `%${search}%`))
   return todos;
 }
 
+// 4) deleteTodoById
 async function deleteTodoById(id) {
-  const todo = await db.delete(todoTable).where(todoTable.id.equals(id)).run();
-  return todo;
+  const result = await db
+    .delete(todoTable)
+    .where(eq(todoTable.id, id))
+  return result;
 }
 
 const SYSTEM_PROMPT = `
@@ -53,6 +68,14 @@ After Planning, Take the action with appropriate tools and wait for Observation 
 Once you get the observations, Return the AI response based on START prompt and observations
 
 You can manage tasks by adding, viewing, searching and deleting tasks.
+
+Once you get the observations, Return the AI response in JSON format as exampled below
+Example (in JSON):
+START
+{ "type": "user", "user": "..." }
+{ "type": "plan", "plan": "..." }
+...
+{ "type": "output", "output": "..." }
 
 
 TODO DB Schema:
@@ -109,6 +132,12 @@ while (true) {
 
     const result = chat.choices[0].message.content;
     messages.push({ role: "assistant", content: result });
+
+    console.log('\n\n\n --------------- Start ---------------');
+    console.log(result);
+    console.log('--------------- Ends ---------------\n\n\n ');
+
+
 
     const action = JSON.parse(result);
     if (action.type === "output") {
