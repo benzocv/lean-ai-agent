@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import readlineSync from "readline-sync";
 
-
+ 
 
 const openai = new OpenAI({
     apiKey: OPEN_AI_API_KEY,
