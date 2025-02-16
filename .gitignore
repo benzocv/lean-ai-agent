@@ -3,3 +3,5 @@ project-1-weather-app/.env
 project-1-weather-app/node_modules
 project-2-weather-app/.env
 project-2-weather-app/node_modules
+project-2-todo-app/node_modules
+project-2-todo-app/.env
